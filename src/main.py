@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import cv2
 
 from detector import VehicleDetector
 from vehicle_counter import VehicleCounter
@@ -59,7 +60,30 @@ def process_image(source_path):
 
     print_counts(vehicle_counts)
 
+    # Create annotated image with bounding boxes
+    annotated_image = result.plot()
+
+    # Project root/output folder
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_directory = os.path.join(project_root, "outputs", "images")
+
+    # Create folder if it doesn't exist
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Create output filename
+    input_filename = os.path.basename(source_path)
+    filename_without_extension, _ = os.path.splitext(input_filename)
+
+    output_path = os.path.join(
+        output_directory,
+        f"{filename_without_extension}_processed.jpg"
+    )
+
+    # Save the annotated image
+    cv2.imwrite(output_path, annotated_image)
+
     print("\nDetection completed successfully!")
+    print(f"Processed image saved to:\n{output_path}")
 
 
 def process_video(source_path):
@@ -119,6 +143,7 @@ def main():
 
     else:
         print("\nERROR: Unsupported file format.")
+
         print("\nSupported image formats:")
         print(", ".join(sorted(IMAGE_EXTENSIONS)))
 
