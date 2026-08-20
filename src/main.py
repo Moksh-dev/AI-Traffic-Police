@@ -1,86 +1,131 @@
-from pathlib import Path
-import cv2
+import argparse
+import os
+import sys
 
 from detector import VehicleDetector
 from vehicle_counter import VehicleCounter
 
 
-def main():
+IMAGE_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".bmp",
+    ".webp"
+}
 
-    # Find the project root directory
-    project_root = Path(__file__).resolve().parent.parent
+VIDEO_EXTENSIONS = {
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".wmv"
+}
 
-    # Create the detector
+
+def print_header():
+    print("\n" + "=" * 60)
+    print("               AI TRAFFIC POLICE")
+    print("        Vehicle Detection & Classification")
+    print("=" * 60)
+
+
+def print_counts(vehicle_counts):
+    total_vehicles = sum(vehicle_counts.values())
+
+    print("\nVEHICLE COUNT RESULTS")
+    print("-" * 60)
+
+    print(f"Cars:        {vehicle_counts['car']}")
+    print(f"Motorcycles: {vehicle_counts['motorcycle']}")
+    print(f"Buses:       {vehicle_counts['bus']}")
+    print(f"Trucks:      {vehicle_counts['truck']}")
+
+    print("-" * 60)
+    print(f"TOTAL VEHICLES: {total_vehicles}")
+    print("=" * 60)
+
+
+def process_image(source_path):
+    print("\nProcessing image...")
+    print(f"Image: {source_path}")
+
     detector = VehicleDetector()
-
-    # Create the vehicle processor
     counter = VehicleCounter()
 
-    # Path to input traffic image
-    image_path = (
-        project_root
-        / "data"
-        / "images"
-        / "traffic.jpg"
+    result = detector.detect(source_path)
+
+    vehicle_counts = counter.count(result)
+
+    print_counts(vehicle_counts)
+
+    print("\nDetection completed successfully!")
+
+
+def process_video(source_path):
+    print("\nProcessing video...")
+    print(f"Video: {source_path}")
+
+    from video_detector import process_video
+
+    process_video(source_path)
+
+
+def get_source_type(source_path):
+    _, extension = os.path.splitext(source_path)
+
+    extension = extension.lower()
+
+    if extension in IMAGE_EXTENSIONS:
+        return "image"
+
+    if extension in VIDEO_EXTENSIONS:
+        return "video"
+
+    return None
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="AI Traffic Police - Vehicle Detection and Counting System"
     )
 
-    # Check if image exists
-    if not image_path.exists():
-        print("Error: Input image not found!")
-        print(f"Expected image at: {image_path}")
-        return
-
-    print("\nProcessing image...")
-    print(f"Image: {image_path}")
-
-    # STEP 1: Detect objects using YOLO
-    result = detector.detect(str(image_path))
-
-    # STEP 2: Process detected vehicles
-    vehicle_counts, detected_vehicles = counter.process_vehicles(result)
-
-    # STEP 3: Display vehicle counts
-    print("\nVEHICLE COUNT RESULTS")
-    print("-" * 30)
-
-    for vehicle, count in vehicle_counts.items():
-        print(f"{vehicle}: {count}")
-
-    # STEP 4: Display detailed vehicle information
-    print("\nDETECTED VEHICLE DETAILS")
-    print("-" * 30)
-
-    for index, vehicle in enumerate(detected_vehicles, start=1):
-        print(f"\nVehicle {index}")
-        print(f"Type: {vehicle['class']}")
-        print(f"Confidence: {vehicle['confidence']}")
-        print(f"Bounding Box: {vehicle['bbox']}")
-
-    # STEP 5: Generate annotated image
-    annotated_image = result.plot()
-
-    # Output image path
-    output_path = (
-        project_root
-        / "outputs"
-        / "images"
-        / "traffic_result.jpg"
+    parser.add_argument(
+        "--source",
+        type=str,
+        required=True,
+        help="Path to an image or video file"
     )
 
-    # Make sure output folder exists
-    output_path.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
+    args = parser.parse_args()
 
-    # Save annotated image
-    cv2.imwrite(
-        str(output_path),
-        annotated_image
-    )
+    source_path = args.source
 
-    print("\nAnnotated image saved successfully!")
-    print(f"Output: {output_path}")
+    print_header()
+
+    if not os.path.exists(source_path):
+        print("\nERROR: File not found.")
+        print(f"Path provided: {source_path}")
+        print("\nPlease check the file path and try again.")
+        sys.exit(1)
+
+    source_type = get_source_type(source_path)
+
+    if source_type == "image":
+        process_image(source_path)
+
+    elif source_type == "video":
+        process_video(source_path)
+
+    else:
+        print("\nERROR: Unsupported file format.")
+        print("\nSupported image formats:")
+        print(", ".join(sorted(IMAGE_EXTENSIONS)))
+
+        print("\nSupported video formats:")
+        print(", ".join(sorted(VIDEO_EXTENSIONS)))
+
+        sys.exit(1)
 
 
 if __name__ == "__main__":
