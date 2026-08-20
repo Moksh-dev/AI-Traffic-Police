@@ -1,24 +1,38 @@
+import os
+
 from ultralytics import YOLO
 
 
 class VehicleDetector:
+    def __init__(self):
+        # Get the absolute path of the project root
+        project_root = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
 
-    # COCO class IDs for vehicles
-    VEHICLE_CLASSES = {
-        2: "car",
-        3: "motorcycle",
-        5: "bus",
-        7: "truck"
-    }
+        # Build the model path
+        model_path = os.path.join(
+            project_root,
+            "models",
+            "yolo26n.pt"
+        )
 
-    def __init__(self, model_path="../yolo26n.pt"):
+        # Load the locally stored YOLO model
         self.model = YOLO(model_path)
 
-    def detect(self, image, confidence=0.5):
+        # COCO class IDs for supported vehicles
+        self.vehicle_classes = {
+            2: "car",
+            3: "motorcycle",
+            5: "bus",
+            7: "truck"
+        }
+
+    def detect(self, source, confidence=0.4):
         results = self.model.predict(
-            source=image,
+            source=source,
             conf=confidence,
-            classes=list(self.VEHICLE_CLASSES.keys())
+            verbose=False
         )
 
         return results[0]

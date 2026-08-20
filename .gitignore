@@ -1,8 +1,18 @@
+# Virtual environment
 .venv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Generated outputs
 runs/
 outputs/
+
+# Large local datasets
 datasets/
 *.zip
-*.pt
+
+# OS files
+.DS_Store
+Thumbs.db
