@@ -1,16 +1,6 @@
 class VehicleCounter:
 
-    def __init__(self):
-
-        self.vehicle_classes = [
-            "car",
-            "motorcycle",
-            "bus",
-            "truck"
-        ]
-
-    def process_vehicles(self, result):
-
+    def count(self, result):
         vehicle_counts = {
             "car": 0,
             "motorcycle": 0,
@@ -18,34 +8,22 @@ class VehicleCounter:
             "truck": 0
         }
 
-        detected_vehicles = []
+        if result.boxes is None:
+            return vehicle_counts
 
-        # Go through every bounding box detected by YOLO
         for box in result.boxes:
-
             class_id = int(box.cls[0])
-            class_name = result.names[class_id]
 
-            confidence = float(box.conf[0])
+            if class_id == 2:
+                vehicle_counts["car"] += 1
 
-            # Bounding box coordinates
-            x1, y1, x2, y2 = box.xyxy[0].tolist()
+            elif class_id == 3:
+                vehicle_counts["motorcycle"] += 1
 
-            if class_name in self.vehicle_classes:
+            elif class_id == 5:
+                vehicle_counts["bus"] += 1
 
-                vehicle_counts[class_name] += 1
+            elif class_id == 7:
+                vehicle_counts["truck"] += 1
 
-                vehicle = {
-                    "class": class_name,
-                    "confidence": round(confidence, 2),
-                    "bbox": {
-                        "x1": round(x1, 2),
-                        "y1": round(y1, 2),
-                        "x2": round(x2, 2),
-                        "y2": round(y2, 2)
-                    }
-                }
-
-                detected_vehicles.append(vehicle)
-
-        return vehicle_counts, detected_vehicles
+        return vehicle_counts
