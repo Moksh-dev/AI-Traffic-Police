@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+
+runs/
+outputs/
+
+datasets/
+
+# Large downloaded datasets
+*.zip
+
+# Temporary test files
+bus.jpg
+
+# Downloaded model weights
+*.pt
