@@ -1,208 +1,120 @@
 # 🚦 AI Traffic Police
 
-An AI-powered computer vision system for detecting, classifying, and counting vehicles from traffic images and videos.
+An AI-powered vehicle detection and counting system built using **Python, Ultralytics YOLO, and OpenCV**.
 
-The system uses a pre-trained YOLO model together with OpenCV to identify vehicles in traffic scenes and classify them into four categories:
+The system accepts both **images and videos**, detects vehicles, filters relevant traffic classes, counts them, and saves annotated outputs. It also includes an inference-based evaluation pipeline using the provided vehicle datasets.
+
+---
+
+## 📌 Project Overview
+
+AI Traffic Police is a computer vision project designed to detect and count vehicles from traffic images and videos.
+
+The system uses a **pre-trained YOLO model** for object detection and focuses on four vehicle categories:
 
 - 🚗 Car
 - 🏍️ Motorcycle
 - 🚌 Bus
-- 🚛 Truck
+- 🚚 Truck
 
-The application supports both image and video input through a single command-line interface and automatically saves processed results.
-
----
-
-# 📌 Project Overview
-
-AI Traffic Police is a computer vision-based application designed to analyse traffic images and videos.
-
-Given an image or video, the system automatically:
-
-1. Detects objects using a pre-trained YOLO model.
-2. Filters detections to supported vehicle categories.
-3. Classifies vehicles as cars, motorcycles, buses, or trucks.
-4. Counts the detected vehicles.
-5. Displays bounding boxes and labels.
-6. Saves the processed image or video.
-
-The application supports dynamic input, meaning a user can provide any supported image or video file without modifying the source code.
+The application supports dynamic input, meaning users can provide their own image or video without modifying the source code.
 
 ---
 
-# ❗ Problem Statement
+## 🎯 Problem Statement
 
-Manual traffic monitoring can be time-consuming and difficult to scale across large numbers of roads and surveillance cameras.
+Traffic monitoring often requires manually analysing large amounts of image or video data.
 
-The objective of this project is to build an AI-based traffic analysis system capable of automatically detecting and classifying vehicles from images and videos.
+The goal of this project is to build a reusable computer vision pipeline that can:
 
-For Part 1, the system focuses on:
-
-- Vehicle detection
-- Vehicle classification
-- Vehicle counting from images
-- Vehicle counting from videos
-
-The supported vehicle categories are:
-
-| Vehicle Type |
-|---|
-| Car |
-| Motorcycle |
-| Bus |
-| Truck |
+- Detect vehicles from traffic images.
+- Process traffic videos frame by frame.
+- Identify relevant vehicle categories.
+- Count detected vehicles.
+- Generate annotated output images and videos.
+- Evaluate the detection pipeline using the provided datasets.
 
 ---
 
-# ✨ Features
+## ✨ Features
 
-- 🖼️ Vehicle detection from images
-- 🎥 Vehicle detection from videos
-- 🚗 Car classification
-- 🏍️ Motorcycle classification
-- 🚌 Bus classification
-- 🚛 Truck classification
-- 🔢 Vehicle counting
-- 📊 Frame-level vehicle counts for videos
-- 📦 Dynamic image and video input
-- 💾 Automatic processed image saving
-- 🎬 Automatic processed video saving
-- 🧠 Pre-trained YOLO model for object detection
-- ⚡ Command-line interface
+- Vehicle detection using a pre-trained YOLO model.
+- Supports both images and videos.
+- Dynamic input through the `--source` command-line argument.
+- Detection of cars, motorcycles, buses, and trucks.
+- Frame-level vehicle counting for videos.
+- Annotated image output.
+- Annotated video output.
+- Dataset evaluation pipeline.
+- CSV evaluation reports.
+- Modular project structure.
 
 ---
 
-# 🏗️ Methodology
-
-The system follows the pipeline below:
+# 🏗️ Project Architecture
 
 ```text
-                 INPUT IMAGE / VIDEO
-                          │
-                          ▼
-                      main.py
-                          │
-                          ▼
-                Detect Input Type
-                    │         │
-                    │         │
-                 IMAGE      VIDEO
-                    │         │
-                    ▼         ▼
-              Image Pipeline  Video Pipeline
-                    │         │
-                    └────┬────┘
-                         │
-                         ▼
-                 VehicleDetector
-                         │
-                         ▼
-                    YOLO Model
-                         │
-                         ▼
-              Vehicle Class Filtering
-                         │
-                         ▼
-             Car / Motorcycle / Bus / Truck
-                         │
-                         ▼
-                  VehicleCounter
-                         │
-                         ▼
-             Classification + Counting
-                         │
-                         ▼
-                Display + Save Output
+                IMAGE / VIDEO
+                      │
+                      ▼
+                 main.py
+                      │
+          ┌───────────┴───────────┐
+          │                       │
+          ▼                       ▼
+      Image Input              Video Input
+          │                       │
+          ▼                       ▼
+    VehicleDetector         VideoDetector
+          │                       │
+          └───────────┬───────────┘
+                      │
+                      ▼
+              Pre-trained YOLO
+                      │
+                      ▼
+              Object Detection
+                      │
+                      ▼
+              Vehicle Filtering
+                      │
+                      ▼
+              VehicleCounter
+                      │
+                      ▼
+             Annotated Output
 ```
-
-## Image Processing
-
-For an input image:
-
-```text
-Image
-  ↓
-YOLO Detection
-  ↓
-Vehicle Filtering
-  ↓
-Classification
-  ↓
-Counting
-  ↓
-Annotated Image
-  ↓
-Save Result
-```
-
-## Video Processing
-
-For an input video:
-
-```text
-Video
-  ↓
-OpenCV VideoCapture
-  ↓
-Read Frame
-  ↓
-YOLO Detection
-  ↓
-Vehicle Filtering
-  ↓
-Classification + Counting
-  ↓
-Annotate Frame
-  ↓
-Write Processed Frame
-  ↓
-Processed Video
-```
-
-Each video frame is processed independently.
 
 ---
 
-# 🚗 Vehicle Classes
-
-The pre-trained YOLO model uses COCO class IDs.
-
-The system filters detections to the following vehicle classes:
-
-| Vehicle | COCO Class ID |
-|---|---:|
-| Car | 2 |
-| Motorcycle | 3 |
-| Bus | 5 |
-| Truck | 7 |
-
-Only these classes are included in the vehicle counting process.
-
----
-
-# 📂 Project Structure
+# 📁 Project Structure
 
 ```text
 AI-Traffic-Police/
 │
+├── assets/
+│
 ├── data/
 │   ├── images/
-│   │   └── traffic.jpg
-│   │
 │   └── videos/
-│       └── traffic.MOV
+│
+├── docs/
 │
 ├── experiments/
-│   └── initial_detection_scripts/
+│
+├── models/
+│   └── yolo26n.pt
 │
 ├── outputs/
 │   ├── images/
-│   └── videos/
+│   ├── videos/
+│   └── evaluation/
 │
 ├── src/
 │   ├── detector.py
 │   ├── vehicle_counter.py
 │   ├── video_detector.py
+│   ├── dataset_evaluator.py
 │   └── main.py
 │
 ├── .gitignore
@@ -212,55 +124,12 @@ AI-Traffic-Police/
 
 ---
 
-# 📊 Dataset Used
-
-The project uses vehicle datasets downloaded from Roboflow for experimentation and testing.
-
-Two datasets were explored:
-
-### 1. Vehicles Dataset
-
-- Source: Roboflow
-- Format: Multi-Class Classification
-- Approximate number of images: 4,549
-- Classes include:
-  - Bus
-  - Motorcycle
-  - Car
-  - Truck
-
-### 2. Vehicles-COCO Dataset
-
-- Source: Roboflow
-- Format: Multi-Class Classification
-- Approximate number of images: 18,998
-- Used for experimentation and testing with traffic and vehicle images.
-
-The datasets were primarily used to explore the available vehicle classes and test the pre-trained detection pipeline.
-
-The final implementation uses a pre-trained YOLO model for vehicle detection rather than training a custom model from scratch.
-
----
-
-# 🛠️ Technologies Used
-
-| Technology | Purpose |
-|---|---|
-| Python | Core programming language |
-| Ultralytics YOLO | Object detection |
-| OpenCV | Image and video processing |
-| NumPy | Image/frame data handling |
-| Git | Version control |
-| GitHub | Project hosting and submission |
-
----
-
 # ⚙️ Installation Instructions
 
-## 1. Clone the Repository
+## 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/AI-Traffic-Police.git
+git clone https://github.com/Moksh-dev/AI-Traffic-Police.git
 ```
 
 Move into the project directory:
@@ -269,25 +138,19 @@ Move into the project directory:
 cd AI-Traffic-Police
 ```
 
----
-
-## 2. Create a Virtual Environment
-
-### Windows
+## 2. Create a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it:
+Activate it on Windows:
 
 ```bash
 .venv\Scripts\activate
 ```
 
----
-
-## 3. Install Dependencies
+## 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -295,239 +158,349 @@ pip install -r requirements.txt
 
 ---
 
-# ▶️ How to Run
+# 🚀 Usage
 
-The application accepts both images and videos using the `--source` argument.
-
-General command:
-
-```bash
-python src/main.py --source "path_to_file"
-```
-
----
-
-## 🖼️ Run with an Image
-
-Example:
+## Run on an image
 
 ```bash
 python src/main.py --source "data/images/traffic.jpg"
 ```
 
-The system will:
+The image does not have to be inside the project.
 
-- Detect vehicles
-- Classify vehicles
-- Count each vehicle category
-- Display results in the terminal
-- Save the annotated image
+For example:
 
-Example terminal output:
-
-```text
-============================================================
-                    AI TRAFFIC POLICE
-             Vehicle Detection & Classification
-============================================================
-
-Processing image...
-
-VEHICLE COUNT RESULTS
-------------------------------------------------------------
-Cars:        2
-Motorcycles: 0
-Buses:       1
-Trucks:      0
-------------------------------------------------------------
-TOTAL VEHICLES: 3
-============================================================
-
-Detection completed successfully!
+```bash
+python src/main.py --source "C:\Users\YourName\Downloads\traffic.jpg"
 ```
 
-The processed image is saved inside:
-
-```text
-outputs/images/
-```
-
----
-
-## 🎥 Run with a Video
-
-Example:
+## Run on a video
 
 ```bash
 python src/main.py --source "data/videos/traffic.MOV"
 ```
 
-The system will:
+You can also provide an external video:
 
-- Read the video frame by frame
-- Detect supported vehicles
-- Draw bounding boxes
-- Display vehicle classes
-- Display the number of vehicles visible in the current frame
-- Save the processed video
-
-The processed video is saved inside:
-
-```text
-outputs/videos/
+```bash
+python src/main.py --source "C:\Users\YourName\Downloads\traffic.mp4"
 ```
 
 ---
 
-# 📈 Results
+# 🧠 Methodology
 
-The system successfully performs vehicle detection and classification on both images and videos.
+The project uses a modular computer vision pipeline.
 
-### Image Results
+## Step 1: Input Detection
 
-The application successfully:
+The user provides an image or video using the `--source` argument.
 
-- Detects supported vehicles in an image.
-- Filters detections to cars, motorcycles, buses, and trucks.
-- Counts the number of detected vehicles.
-- Generates and saves an annotated output image.
+`main.py` determines whether the source is an image or video and routes it to the appropriate processing pipeline.
 
-### Video Results
+## Step 2: YOLO Object Detection
 
-The application successfully:
+The pre-trained YOLO model processes the input and produces predictions containing:
 
-- Processes videos frame by frame.
-- Detects supported vehicle categories.
-- Displays bounding boxes and class labels.
-- Calculates vehicle counts for each frame.
-- Saves the processed video.
+- Bounding boxes
+- Class IDs
+- Confidence scores
 
-Example frame-level output:
+## Step 3: Vehicle Filtering
+
+YOLO can detect multiple object categories.
+
+This project filters predictions to the following vehicle classes:
 
 ```text
-Total: 8 | Cars: 5 | Motorcycles: 1 | Buses: 1 | Trucks: 1
+Car
+Motorcycle
+Bus
+Truck
 ```
 
-> Vehicle counts in videos represent the vehicles visible in the current frame.
+Non-vehicle detections are ignored.
+
+## Step 4: Vehicle Counting
+
+The filtered detections are passed to `VehicleCounter`.
+
+For images, the detected vehicles are counted once.
+
+For videos, the system performs **frame-level counting**, meaning the displayed count represents vehicles detected in the current frame.
+
+## Step 5: Output Generation
+
+The system generates annotated outputs containing:
+
+- Vehicle bounding boxes
+- Vehicle class labels
+- Vehicle counts
+
+Processed files are saved inside the `outputs/` directory.
 
 ---
 
-# 📸 Screenshots
+# 📊 Dataset Used
 
-## Image Detection Result
+The project uses the following provided datasets for evaluation:
 
-> Add your actual processed image here.
-
-```md
-![Image Detection Result](assets/image_result.png)
-```
-
-## Video Detection Result
-
-> Add a screenshot captured from the processed video here.
-
-```md
-![Video Detection Result](assets/video_result.png)
-```
-
-The `assets` folder can contain screenshots used in this README:
+### Dataset 1
 
 ```text
-assets/
-├── image_result.png
-└── video_result.png
+Vehicles-coco.v2i.multiclass
+```
+
+### Dataset 2
+
+```text
+Vehicles.v1i.multiclass
+```
+
+These datasets were used as **evaluation inputs**.
+
+The pre-trained YOLO model was **not retrained or fine-tuned** using these datasets.
+
+The evaluation pipeline processes each image and records detection statistics.
+
+---
+
+# 📈 Evaluation Methodology
+
+The dataset evaluation process follows this pipeline:
+
+```text
+Dataset Folder
+      │
+      ▼
+Find All Images
+      │
+      ▼
+YOLO Inference
+      │
+      ▼
+Vehicle Filtering
+      │
+      ▼
+Vehicle Counting
+      │
+      ▼
+Aggregate Statistics
+      │
+      ▼
+CSV Evaluation Report
+```
+
+The evaluation reports include:
+
+- Number of images processed.
+- Images with at least one supported vehicle detected.
+- Vehicle detection rate.
+- Cars detected.
+- Motorcycles detected.
+- Buses detected.
+- Trucks detected.
+- Total vehicle detections.
+- Average vehicles detected per image.
+
+> **Note:** The reported vehicle detection rate is not the same as model accuracy. It represents the percentage of processed images in which the system detected at least one supported vehicle class.
+
+---
+
+# 📊 Results
+
+## Vehicles-COCO Dataset
+
+| Metric | Result |
+|---|---:|
+| Images Processed | 13,300 |
+| Images with Vehicles Detected | 9,474 |
+| Vehicle Detection Rate | 71.23% |
+| Cars Detected | 11,901 |
+| Motorcycles Detected | 2,779 |
+| Buses Detected | 3,196 |
+| Trucks Detected | 2,592 |
+| Total Vehicle Detections | 20,468 |
+| Average Vehicles per Image | 1.54 |
+
+---
+
+## Vehicles Dataset
+
+| Metric | Result |
+|---|---:|
+| Images Processed | 4,311 |
+| Images with Vehicles Detected | 512 |
+| Vehicle Detection Rate | 11.88% |
+| Cars Detected | 242 |
+| Motorcycles Detected | 10 |
+| Buses Detected | 127 |
+| Trucks Detected | 300 |
+| Total Vehicle Detections | 679 |
+| Average Vehicles per Image | 0.16 |
+
+The difference in results demonstrates that the performance of a pre-trained detection pipeline can vary depending on the characteristics and distribution of the input data.
+
+---
+
+# 🛠️ Technologies Used
+
+- Python
+- Ultralytics YOLO
+- OpenCV
+- PyTorch
+- Git
+- GitHub
+
+---
+
+# 📦 Requirements
+
+All project dependencies are listed in:
+
+```text
+requirements.txt
+```
+
+Install them using:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
 # ⚠️ Challenges Faced
 
-Several challenges were encountered during the development process.
+## 1. Dynamic File Handling
 
-### 1. Dataset Format
+Initially, the system relied on fixed file paths.
 
-The downloaded vehicle datasets were exported in Multi-Class Classification format. This required understanding the difference between image classification datasets and object detection datasets with bounding-box annotations.
+This was improved by adding support for:
 
-### 2. Model Path and Download Issues
+```bash
+--source
+```
 
-The YOLO model initially attempted to download automatically, but network connection issues caused download failures. This was resolved by using the locally available model file.
+This allows users to provide any supported image or video.
 
-### 3. File Path Handling
+## 2. Separating Detection and Counting
 
-Different parts of the application initially used hardcoded file paths. The system was later improved to accept dynamic image or video paths using command-line arguments.
+Instead of placing all logic in one script, the system was separated into modules responsible for:
 
-### 4. Synchronizing Components
+- Detection
+- Vehicle filtering
+- Counting
+- Video processing
+- Dataset evaluation
 
-As the project architecture evolved, methods in different files became inconsistent. For example, the vehicle counting interface required synchronization with the main application pipeline.
+This improves code readability and maintainability.
 
-### 5. Video Output Generation
+## 3. Video Processing
 
-Saving processed videos required preserving the input video's frame dimensions and frame rate while writing annotated frames into a new output file.
+Videos require frame-by-frame processing.
+
+OpenCV is used to:
+
+- Read video frames.
+- Process each frame using YOLO.
+- Annotate detections.
+- Save the processed video.
+
+## 4. Dataset Evaluation
+
+The provided datasets were used for inference-based evaluation.
+
+Because the current pipeline does not compare predictions against bounding-box ground truth, traditional object detection metrics such as mAP and IoU are not reported.
+
+Instead, the project reports transparent inference statistics.
 
 ---
 
 # 🔮 Future Improvements
 
-Possible improvements include:
+Possible future improvements include:
 
-- Object tracking across video frames.
-- Unique vehicle counting.
-- Vehicle speed estimation.
+- Object tracking for unique vehicle counting.
 - Traffic density analysis.
 - Congestion detection.
-- Lane detection.
-- Number plate recognition.
-- Traffic violation detection.
-- Real-time CCTV or webcam integration.
-- Traffic analytics dashboard.
-- Fine-tuning a pre-trained model on a traffic-specific object detection dataset.
+- Real-time webcam or CCTV support.
+- Custom model training using bounding-box annotated traffic data.
+- A web-based dashboard for visualising traffic statistics.
 
 ---
 
-# 🧠 Key Learning
+# 📸 Screenshots
 
-This project demonstrates a practical computer vision pipeline using a pre-trained object detection model.
+## Image Detection
 
-A key distinction explored during development was:
+![Image Detection](assets/image_result.png)
 
-### Object Detection
+## Video Detection
 
-Object detection identifies objects independently in an image or video frame.
+![Video Detection](assets/video_result.png)
 
-Example:
+## Dataset Evaluation
 
-```text
-Frame
-├── Car
-├── Car
-└── Bus
+![Dataset Evaluation](assets/dataset_evaluation.png)
+
+---
+
+# 🎥 Demo
+
+The project can be demonstrated using:
+
+### Image Detection
+
+```bash
+python src/main.py --source "data/images/traffic.jpg"
 ```
 
-### Object Tracking
+### External Image Detection
 
-Object tracking would associate the same detected object across consecutive frames.
-
-Example:
-
-```text
-Frame 1 → Car ID 1
-Frame 2 → Car ID 1
-Frame 3 → Car ID 1
+```bash
+python src/main.py --source "C:\Users\YourName\Downloads\test.jpg"
 ```
 
-The current implementation focuses on object detection and frame-level counting. Object tracking is identified as a future improvement.
+### Video Detection
+
+```bash
+python src/main.py --source "data/videos/traffic.MOV"
+```
+
+### Dataset Evaluation
+
+```bash
+python src/dataset_evaluator.py --dataset "datasets/Vehicles-coco.v2i.multiclass/train"
+```
 
 ---
 
-# 👩‍💻 Author
+# 📌 Limitations
 
-**Kashish Goel**
+The current video implementation performs **frame-level vehicle counting**.
 
-B.Tech Computer Science Engineering  
-Specialization: Artificial Intelligence and Machine Learning
+This means the same vehicle may be detected in multiple consecutive frames.
+
+The current project does not yet perform object tracking or unique vehicle identification across an entire video.
 
 ---
 
-## ⭐ Project Status
+# 📄 Project Status
 
-**Part 1 – Vehicle Classification and Counting: Completed**
+## Part 1 — Vehicle Detection and Frame-Level Counting
+
+**Completed ✅**
+
+The current implementation provides:
+
+- Image detection
+- Video detection
+- Vehicle filtering
+- Frame-level counting
+- Dynamic source handling
+- Annotated output saving
+- Dataset evaluation
+- CSV evaluation reports
+
+The project was developed using an incremental Git commit history to document the evolution of the system.
